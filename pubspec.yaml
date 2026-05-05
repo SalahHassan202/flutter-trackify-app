@@ -38,6 +38,11 @@ dependencies:
   geolocator: ^14.0.2
   custom_info_window: ^1.0.1
   geocoding: ^4.0.0
+  firebase_core: ^4.7.0
+  cloud_firestore: ^6.3.0
+  firebase_remote_config: ^6.4.0
+  firebase_auth: ^6.4.0
+  firebase_messaging: ^16.2.0
 
 dev_dependencies:
   flutter_test:
