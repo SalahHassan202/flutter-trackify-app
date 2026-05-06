@@ -1,21 +1,22 @@
-import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
-
-import '../../../core/constants/user_data.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trackify_app/core/constants/user_data.dart';
 import '../repo/auth_repo.dart';
-
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit(this._authRepo) : super(AuthInitial());
   final AuthRepo _authRepo;
-  void registerUser(
-      {required String email,
-      required String userName,
-      required String password}) async {
+  void registerUser({
+    required String email,
+    required String userName,
+    required String password,
+  }) async {
     emit(AuthLoading());
     final result = await _authRepo.registerUser(
-        email: email, userName: userName, password: password);
+      email: email,
+      userName: userName,
+      password: password,
+    );
     return result.fold(
       (l) {
         emit(AuthError(l));
@@ -29,11 +30,14 @@ class AuthCubit extends Cubit<AuthState> {
   void loginUser({required String email, required String password}) async {
     emit(AuthLoading());
     final result = await _authRepo.loginUser(email: email, password: password);
-    return result.fold((l) {
-      emit(AuthError(l));
-    }, (userModel) {
-      UserData.userModel = userModel;
-      emit(AuthSuccess("User Login successfully"));
-    });
+    return result.fold(
+      (l) {
+        emit(AuthError(l));
+      },
+      (userModel) {
+        UserData.userModel = userModel;
+        emit(AuthSuccess("User Login successfully"));
+      },
+    );
   }
 }
