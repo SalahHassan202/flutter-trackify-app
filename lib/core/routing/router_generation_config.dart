@@ -4,6 +4,7 @@ import 'package:trackify_app/core/routing/app_routes.dart';
 import 'package:trackify_app/features/auth/cubit/auth_cubit.dart';
 import 'package:trackify_app/features/auth/screns/login_screen.dart';
 import 'package:trackify_app/features/auth/screns/register_screen.dart';
+import 'package:trackify_app/features/home/home_screen.dart';
 import 'package:trackify_app/features/splash_screen/splash_screen.dart';
 
 class RouterGenerationConfig {
@@ -30,6 +31,11 @@ class RouterGenerationConfig {
           create: (context) => sl<AuthCubit>(),
           child: RegisterScreen(),
         ),
+      ),
+      GoRoute(
+        name: AppRoutes.homeScreen,
+        path: AppRoutes.homeScreen,
+        builder: (context, state) => const HomeScreen(),
       ),
     ],
   );
