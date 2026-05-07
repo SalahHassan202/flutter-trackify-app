@@ -54,7 +54,7 @@ class _PlacePickerScreenState extends State<PlacePickerScreen> {
       }
 
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings: LocationSettings(accuracy: LocationAccuracy.high),
       );
 
       setState(() {
@@ -150,7 +150,9 @@ class _PlacePickerScreenState extends State<PlacePickerScreen> {
           await _getAddressFromLatLng(selectedLocation);
           found = true;
 
-          FocusScope.of(context).unfocus();
+          if (mounted) {
+            FocusScope.of(context).unfocus();
+          }
         }
       } catch (e) {
         debugPrint("Search attempt failed for: $searchQuery - $e");
@@ -177,9 +179,7 @@ class _PlacePickerScreenState extends State<PlacePickerScreen> {
         backgroundColor: isError ? Colors.red : Colors.green,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 3),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
@@ -237,7 +237,7 @@ class _PlacePickerScreenState extends State<PlacePickerScreen> {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -259,7 +259,7 @@ class _PlacePickerScreenState extends State<PlacePickerScreen> {
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -320,7 +320,7 @@ class _PlacePickerScreenState extends State<PlacePickerScreen> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),
@@ -351,7 +351,7 @@ class _PlacePickerScreenState extends State<PlacePickerScreen> {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.red.withOpacity(0.1),
+                            color: Colors.red.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Icon(
@@ -468,7 +468,7 @@ class _PlacePickerScreenState extends State<PlacePickerScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
