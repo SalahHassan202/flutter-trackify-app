@@ -1,27 +1,22 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:typed_data';
 
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:practical_google_maps_example/core/routing/router_generation_config.dart';
-import 'package:practical_google_maps_example/core/styling/app_assets.dart';
-import 'package:practical_google_maps_example/core/styling/app_colors.dart';
-import 'package:practical_google_maps_example/core/utils/animated_snack_dialog.dart';
-import 'package:practical_google_maps_example/core/utils/location_services.dart';
-import 'package:practical_google_maps_example/features/add_order_screen/cubit/orders_cubit.dart';
-
+import 'package:trackify_app/core/styling/app_assets.dart';
+import 'package:trackify_app/core/styling/app_colors.dart';
+import 'package:trackify_app/core/utils/animated_snack_dialog.dart';
+import 'package:trackify_app/core/utils/location_services.dart';
+import 'package:trackify_app/features/add_order_screen/cubit/orders_cubit.dart';
 import '../add_order_screen/model/order_model.dart';
 
 class UserTrackOrderMapScreen extends StatefulWidget {
@@ -47,118 +42,142 @@ class _UserTrackOrderMapScreenState extends State<UserTrackOrderMapScreen> {
 
   Map<PolylineId, Polyline> polylines = {};
   List<LatLng> polylineCoordinates = [];
-  PolylinePoints polylinePoints = PolylinePoints();
+  late PolylinePoints polylinePoints;
   String googleAPiKey = "Api_Key";
 
   loadOrderLocationAndUserMarker(OrderModel orderModel) async {
-    final Uint8List markerIcon =
-        await LocationServices.getBytesFromAsset(AppAssets.order, 50);
-    final Uint8List userMarkerIcon =
-        await LocationServices.getBytesFromAsset(AppAssets.truck, 50);
+    final Uint8List markerIcon = await LocationServices.getBytesFromAsset(
+      AppAssets.order,
+      50,
+    );
+    final Uint8List userMarkerIcon = await LocationServices.getBytesFromAsset(
+      AppAssets.truck,
+      50,
+    );
 
     final Marker marker = Marker(
       icon: BitmapDescriptor.bytes(markerIcon),
       markerId: MarkerId(orderModel.orderId.toString()),
-      position: LatLng(orderModel.orderLat ?? 30.0596113,
-          orderModel.orderLong ?? 31.1760626),
+      position: LatLng(
+        orderModel.orderLat ?? 30.0596113,
+        orderModel.orderLong ?? 31.1760626,
+      ),
       onTap: () {
         customInfoWindowController.addInfoWindow!(
           Padding(
             padding: EdgeInsets.all(8.sp),
             child: Card(
-                child: Padding(
-              padding: EdgeInsets.all(8.sp),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Order Id: #" + orderModel.orderId!,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 23.sp,
+              child: Padding(
+                padding: EdgeInsets.all(8.sp),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Order Id: #${orderModel.orderId}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 23.sp,
+                      ),
                     ),
-                  ),
-                  Text(
-                    "Order Name: " + orderModel.orderName!,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.sp,
+
+                    Text(
+                      "Order Name: ${orderModel.orderName}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.sp,
+                      ),
                     ),
-                  ),
-                  Text("Order Date: " + orderModel.orderDate!,
+
+                    Text(
+                      "Order Date: ${orderModel.orderDate}",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16.sp,
                         color: Colors.green,
-                      )),
-                  Text("Order Status: " + orderModel.orderStatus!,
+                      ),
+                    ),
+
+                    Text(
+                      "Order Status: ${orderModel.orderStatus}",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16.sp,
                         color: Colors.grey,
-                      )),
-                  SizedBox(
-                    height: 10.sp,
-                  ),
-                ],
+                      ),
+                    ),
+                    SizedBox(height: 10.sp),
+                  ],
+                ),
               ),
-            )),
+            ),
           ),
-          LatLng(orderModel.orderLat ?? 30.0596113,
-              orderModel.orderLong ?? 31.1760626),
+          LatLng(
+            orderModel.orderLat ?? 30.0596113,
+            orderModel.orderLong ?? 31.1760626,
+          ),
         );
       },
     );
     final Marker truckMarker = Marker(
       icon: BitmapDescriptor.bytes(userMarkerIcon),
       markerId: MarkerId(FirebaseAuth.instance.currentUser!.uid.toString()),
-      position: LatLng(currentUserLocation?.latitude ?? 30.0596113,
-          currentUserLocation?.longitude ?? 31.1760626),
+      position: LatLng(
+        currentUserLocation?.latitude ?? 30.0596113,
+        currentUserLocation?.longitude ?? 31.1760626,
+      ),
       onTap: () {
         customInfoWindowController.addInfoWindow!(
           Padding(
             padding: EdgeInsets.all(8.sp),
             child: Card(
-                child: Padding(
-              padding: EdgeInsets.all(8.sp),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Order Id: #" + orderModel.orderId!,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 23.sp,
+              child: Padding(
+                padding: EdgeInsets.all(8.sp),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Order Id: #${orderModel.orderId}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 23.sp,
+                      ),
                     ),
-                  ),
-                  Text(
-                    "Order Name: " + orderModel.orderName!,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.sp,
+
+                    Text(
+                      "Order Name: ${orderModel.orderName}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.sp,
+                      ),
                     ),
-                  ),
-                  Text("Order Date: " + orderModel.orderDate!,
+
+                    Text(
+                      "Order Date: ${orderModel.orderDate}",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16.sp,
                         color: Colors.green,
-                      )),
-                  Text("Order Status: " + orderModel.orderStatus!,
+                      ),
+                    ),
+
+                    Text(
+                      "Order Status: ${orderModel.orderStatus}",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16.sp,
                         color: Colors.grey,
-                      )),
-                  SizedBox(
-                    height: 10.sp,
-                  ),
-                ],
+                      ),
+                    ),
+                    SizedBox(height: 10.sp),
+                  ],
+                ),
               ),
-            )),
+            ),
           ),
-          LatLng(currentUserLocation?.latitude ?? 30.0596113,
-              currentUserLocation?.longitude ?? 31.1760626),
+          LatLng(
+            currentUserLocation?.latitude ?? 30.0596113,
+            currentUserLocation?.longitude ?? 31.1760626,
+          ),
         );
       },
     );
@@ -170,10 +189,13 @@ class _UserTrackOrderMapScreenState extends State<UserTrackOrderMapScreen> {
 
   getCurrentPositionAndAnimateToIT() async {
     try {
-      currentUserLocation = LatLng(widget.order.userLat ?? 30.0596113,
-          widget.order.userLong ?? 31.1760626);
-      _animateToPosition(LatLng(
-          currentUserLocation!.latitude, currentUserLocation!.longitude));
+      currentUserLocation = LatLng(
+        widget.order.userLat ?? 30.0596113,
+        widget.order.userLong ?? 31.1760626,
+      );
+      _animateToPosition(
+        LatLng(currentUserLocation!.latitude, currentUserLocation!.longitude),
+      );
     } catch (e) {
       log(e.toString());
     }
@@ -181,27 +203,34 @@ class _UserTrackOrderMapScreenState extends State<UserTrackOrderMapScreen> {
 
   Future<void> _animateToPosition(LatLng position) async {
     final GoogleMapController controller = await _controller.future;
-    await controller.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(target: position, zoom: 16)));
+    await controller.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(target: position, zoom: 16),
+      ),
+    );
   }
 
   _getPolyline() async {
     polylines = {};
     polylineCoordinates = [];
+    polylinePoints = PolylinePoints(apiKey: googleAPiKey);
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      googleApiKey: googleAPiKey,
       request: PolylineRequest(
         origin: PointLatLng(
-            currentUserLocation!.latitude, currentUserLocation!.longitude),
-        destination:
-            PointLatLng(widget.order.orderLat!, widget.order.orderLong!),
+          currentUserLocation!.latitude,
+          currentUserLocation!.longitude,
+        ),
+        destination: PointLatLng(
+          widget.order.orderLat!,
+          widget.order.orderLong!,
+        ),
         mode: TravelMode.driving,
       ),
     );
     if (result.points.isNotEmpty) {
-      result.points.forEach((PointLatLng point) {
+      for (PointLatLng point in result.points) {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      });
+      }
     }
     _addPolyLine();
   }
@@ -209,9 +238,10 @@ class _UserTrackOrderMapScreenState extends State<UserTrackOrderMapScreen> {
   _addPolyLine() {
     PolylineId id = PolylineId("poly");
     Polyline polyline = Polyline(
-        polylineId: id,
-        color: AppColors.primaryColor,
-        points: polylineCoordinates);
+      polylineId: id,
+      color: AppColors.primaryColor,
+      points: polylineCoordinates,
+    );
     polylines[id] = polyline;
     setState(() {});
   }
@@ -228,22 +258,27 @@ class _UserTrackOrderMapScreenState extends State<UserTrackOrderMapScreen> {
         .collection("orders")
         .where("orderId", isEqualTo: widget.order.orderId)
         .snapshots()
-        .listen((event) {
-      if (event.docs.isNotEmpty) {
-        var doc = event.docs.first;
-        final data = doc.data();
+        .listen(
+          (event) {
+            if (event.docs.isNotEmpty) {
+              var doc = event.docs.first;
+              final data = doc.data();
 
-        OrderModel updateOrder = OrderModel.fromJson(data);
-        setState(() {
-          currentUserLocation =
-              LatLng(updateOrder.userLat!, updateOrder.userLong!);
-          updateTruckMarker();
-          _getPolyline();
-        });
-      }
-    }, onError: (Error) {
-      log(Error.toString());
-    });
+              OrderModel updateOrder = OrderModel.fromJson(data);
+              setState(() {
+                currentUserLocation = LatLng(
+                  updateOrder.userLat!,
+                  updateOrder.userLong!,
+                );
+                updateTruckMarker();
+                _getPolyline();
+              });
+            }
+          },
+          onError: (error) {
+            log(error.toString());
+          },
+        );
   }
 
   getLocationThenLoadMarkers() async {
@@ -253,59 +288,68 @@ class _UserTrackOrderMapScreenState extends State<UserTrackOrderMapScreen> {
   }
 
   updateTruckMarker() async {
-    final Uint8List userMarkerIcon =
-        await LocationServices.getBytesFromAsset(AppAssets.truck, 50);
+    final Uint8List userMarkerIcon = await LocationServices.getBytesFromAsset(
+      AppAssets.truck,
+      50,
+    );
 
     final Marker truckMarker = Marker(
       icon: BitmapDescriptor.bytes(userMarkerIcon),
       markerId: MarkerId(FirebaseAuth.instance.currentUser!.uid.toString()),
-      position: LatLng(currentUserLocation?.latitude ?? 30.0596113,
-          currentUserLocation?.longitude ?? 31.1760626),
+      position: LatLng(
+        currentUserLocation?.latitude ?? 30.0596113,
+        currentUserLocation?.longitude ?? 31.1760626,
+      ),
       onTap: () {
         customInfoWindowController.addInfoWindow!(
           Padding(
             padding: EdgeInsets.all(8.sp),
             child: Card(
-                child: Padding(
-              padding: EdgeInsets.all(8.sp),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Order Id: # ${widget.order.orderId}",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 23.sp,
+              child: Padding(
+                padding: EdgeInsets.all(8.sp),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Order Id: # ${widget.order.orderId}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 23.sp,
+                      ),
                     ),
-                  ),
-                  Text(
-                    "Order Name: # ${widget.order.orderName}",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.sp,
+                    Text(
+                      "Order Name: # ${widget.order.orderName}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.sp,
+                      ),
                     ),
-                  ),
-                  Text("Order Date: # ${widget.order.orderDate}",
+                    Text(
+                      "Order Date: # ${widget.order.orderDate}",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16.sp,
                         color: Colors.green,
-                      )),
-                  Text("Order Status: # ${widget.order.orderStatus}",
+                      ),
+                    ),
+                    Text(
+                      "Order Status: # ${widget.order.orderStatus}",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16.sp,
                         color: Colors.grey,
-                      )),
-                  SizedBox(
-                    height: 10.sp,
-                  ),
-                ],
+                      ),
+                    ),
+                    SizedBox(height: 10.sp),
+                  ],
+                ),
               ),
-            )),
+            ),
           ),
-          LatLng(currentUserLocation?.latitude ?? 30.0596113,
-              currentUserLocation?.longitude ?? 31.1760626),
+          LatLng(
+            currentUserLocation?.latitude ?? 30.0596113,
+            currentUserLocation?.longitude ?? 31.1760626,
+          ),
         );
       },
     );
@@ -318,9 +362,12 @@ class _UserTrackOrderMapScreenState extends State<UserTrackOrderMapScreen> {
   Widget build(BuildContext context) {
     return BlocListener<OrdersCubit, OrdersState>(
       listener: (context, state) {
-        if (state is orderDeliveredStatus) {
-          showAnimatedSnackDialog(context,
-              message: state.message, type: AnimatedSnackBarType.success);
+        if (state is OrderDeliveredStatus) {
+          showAnimatedSnackDialog(
+            context,
+            message: state.message,
+            type: AnimatedSnackBarType.success,
+          );
           context.pop();
         }
       },
@@ -330,8 +377,10 @@ class _UserTrackOrderMapScreenState extends State<UserTrackOrderMapScreen> {
             GoogleMap(
               mapType: MapType.terrain,
               initialCameraPosition: CameraPosition(
-                target: LatLng(widget.order.orderLat ?? 0.0,
-                    widget.order.orderLong ?? 0.0),
+                target: LatLng(
+                  widget.order.orderLat ?? 0.0,
+                  widget.order.orderLong ?? 0.0,
+                ),
                 zoom: 16,
               ),
               onMapCreated: (GoogleMapController controller) {
