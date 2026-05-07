@@ -1,17 +1,14 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:practical_google_maps_example/core/di/dependancy_injection.dart';
-import 'package:practical_google_maps_example/core/routing/router_generation_config.dart';
-import 'package:practical_google_maps_example/core/styling/theme_data.dart';
-import 'package:practical_google_maps_example/firebase_options.dart';
+import 'package:trackify_app/core/di/dependancy_injection.dart';
+import 'package:trackify_app/core/routing/router_generation_config.dart';
+import 'package:trackify_app/core/styling/theme_data.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp();
   setUpServiceLocator();
   runApp(const MyApp());
 }
