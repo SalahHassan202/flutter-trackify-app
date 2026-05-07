@@ -361,7 +361,7 @@ class _OrderTrackMapScreenState extends State<OrderTrackMapScreen> {
   Widget build(BuildContext context) {
     return BlocListener<OrdersCubit, OrdersState>(
       listener: (context, state) {
-        if (state is orderDeliveredStatus) {
+        if (state is OrderDeliveredStatus) {
           showAnimatedSnackDialog(
             context,
             message: state.message,

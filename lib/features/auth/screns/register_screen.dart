@@ -1,18 +1,16 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:practical_google_maps_example/core/routing/app_routes.dart';
-import 'package:practical_google_maps_example/core/styling/app_assets.dart';
-import 'package:practical_google_maps_example/core/styling/app_colors.dart';
-import 'package:practical_google_maps_example/core/styling/app_styles.dart';
-import 'package:practical_google_maps_example/core/utils/animated_snack_dialog.dart';
-import 'package:practical_google_maps_example/core/widgets/custom_text_field.dart';
-import 'package:practical_google_maps_example/core/widgets/primay_button_widget.dart';
-import 'package:practical_google_maps_example/core/widgets/spacing_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:practical_google_maps_example/features/auth/cubit/auth_cubit.dart';
-import 'package:practical_google_maps_example/features/auth/repo/auth_repo.dart';
+import 'package:trackify_app/core/routing/app_routes.dart';
+import 'package:trackify_app/core/styling/app_assets.dart';
+import 'package:trackify_app/core/styling/app_colors.dart';
+import 'package:trackify_app/core/styling/app_styles.dart';
+import 'package:trackify_app/core/widgets/custom_text_field.dart';
+import 'package:trackify_app/core/widgets/primay_button_widget.dart';
+import 'package:trackify_app/core/widgets/spacing_widgets.dart';
+import 'package:trackify_app/features/auth/cubit/auth_cubit.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -30,7 +28,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     username = TextEditingController();
     password = TextEditingController();
@@ -46,8 +43,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: BlocConsumer<AuthCubit, AuthState>(
             listener: (context, state) {
               if (state is AuthSuccess) {
-                showAnimatedSnackDialog(context,
-                    message: state.message, type: AnimatedSnackBarType.success);
+                showAnimatedSnackDialog(
+                  context,
+                  message: state.message,
+                  type: AnimatedSnackBarType.success,
+                );
                 GoRouter.of(context).pushNamed(AppRoutes.loginScreen);
                 GoRouter.of(context).pushNamed(AppRoutes.loginScreen);
                 username.clear();
@@ -56,22 +56,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 confirmPassword.clear();
               }
               if (state is AuthError) {
-                showAnimatedSnackDialog(context,
-                    message: state.message, type: AnimatedSnackBarType.error);
+                showAnimatedSnackDialog(
+                  context,
+                  message: state.message,
+                  type: AnimatedSnackBarType.error,
+                );
               }
             },
             builder: (context, state) {
               if (state is AuthLoading) {
                 return SizedBox(
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width,
-                    child: Center(
-                      child: SizedBox(
-                        height: 40.h,
-                        width: 40.w,
-                        child: const CircularProgressIndicator(),
-                      ),
-                    ));
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: Center(
+                    child: SizedBox(
+                      height: 40.h,
+                      width: 40.w,
+                      child: const CircularProgressIndicator(),
+                    ),
+                  ),
+                );
               }
               return Padding(
                 padding: EdgeInsets.symmetric(horizontal: 22.w),
@@ -151,8 +155,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         },
                       ),
                       const HeightSpace(16),
-                      Text("Confirm Password",
-                          style: AppStyles.black16w500Style),
+                      Text(
+                        "Confirm Password",
+                        style: AppStyles.black16w500Style,
+                      ),
                       const HeightSpace(8),
                       CustomTextField(
                         hintText: "Enter Your Password",
@@ -181,10 +187,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onPress: () {
                           if (formKey.currentState!.validate()) {
                             context.read<AuthCubit>().registerUser(
-                                  email: email.text,
-                                  userName: username.text,
-                                  password: password.text,
-                                );
+                              email: email.text,
+                              userName: username.text,
+                              password: password.text,
+                            );
                           }
                         },
                       ),
@@ -197,12 +203,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           child: RichText(
                             text: TextSpan(
                               text: "Do you have account? ",
-                              style: AppStyles.black16w500Style
-                                  .copyWith(color: AppColors.secondaryColor),
+                              style: AppStyles.black16w500Style.copyWith(
+                                color: AppColors.secondaryColor,
+                              ),
                               children: [
                                 TextSpan(
-                                    text: "Login",
-                                    style: AppStyles.black15BoldStyle)
+                                  text: "Login",
+                                  style: AppStyles.black15BoldStyle,
+                                ),
                               ],
                             ),
                           ),
@@ -219,4 +227,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+
+  void showAnimatedSnackDialog(
+    BuildContext context, {
+    required String message,
+    required AnimatedSnackBarType type,
+  }) {}
 }
